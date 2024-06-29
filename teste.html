@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionário</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .question {
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .help-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .chat-box {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 50vh;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-box header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            color: black;
+        }
+
+        .input {
+            display: flex;
+            border-top: 1px solid #ddd;
+        }
+
+        .input input {
+            flex: 1;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            color: black;
+        }
+
+        .input button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .input input:focus, .input button:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="question-0" class="question active">
+            <p>Pergunta 1: Qual é a capital da França?</p>
+            <input type="text" id="answer-0" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-1" class="question">
+            <p>Pergunta 2: Qual é a fórmula química da água?</p>
+            <input type="text" id="answer-1" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-2" class="question">
+            <p>Pergunta 3: Qual é a maior floresta tropical do mundo?</p>
+            <input type="text" id="answer-2" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-3" class="question">
+            <p>Pergunta 4: Quem pintou a Mona Lisa?</p>
+            <input type="text" id="answer-3" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-4" class="question">
+            <p>Pergunta 5: Quantos continentes existem no mundo?</p>
+            <input type="text" id="answer-4" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-5" class="question">
+            <p>Pergunta 6: Qual é o maior planeta do sistema solar?</p>
+            <input type="text" id="answer-5" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-6" class="question">
+            <p>Pergunta 7: Em que ano o homem pisou na lua pela primeira vez?</p>
+            <input type="text" id="answer-6" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-7" class="question">
+            <p>Pergunta 8: Qual é a linguagem de programação mais usada na web?</p>
+            <input type="text" id="answer-7" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-8" class="question">
+            <p>Pergunta 9: Qual é a velocidade da luz?</p>
+            <input type="text" id="answer-8" placeholder="Digite aqui sua resposta">
+        </div>
+        <div id="question-9" class="question">
+            <p>Pergunta 10: Quem foi o primeiro presidente dos Estados Unidos?</p>
+            <input type="text" id="answer-9" placeholder="Digite aqui sua resposta">
+        </div>
+        
+        <div class="navigation">
+            <button id="prevButton" onclick="showPreviousQuestion()">Anterior</button>
+            <button id="nextButton" onclick="showNextQuestion()">Próximo</button>
+        </div>
+    </div>
+
+    <div class="help-box" onclick="toggleChat()">Solicitar ajuda ao assistente virtual</div>
+
+    <div class="chat-box" id="chatBox">
+        <header>Assistente Virtual</header>
+        <div class="messages" id="chatMessages"></div>
+        <div class="input">
+            <input type="text" id="chatInput" placeholder="Digite sua mensagem">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 0;
+        const totalQuestions = 10;
+
+        function showQuestion(index) {
+            document.querySelectorAll('.question').forEach((question, i) => {
+                question.classList.toggle('active', i === index);
+            });
+        }
+
+        function showNextQuestion() {
+            if (currentQuestion < totalQuestions - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function toggleChat() {
+            const chatBox = document.getElementById('chatBox');
+            chatBox.style.display = chatBox.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = chatInput.value.trim();
+            if (message) {
+                const userMessageElement = document.createElement('div');
+                userMessageElement.textContent = "Você: " + message;
+                chatMessages.appendChild(userMessageElement);
+
+                fetch('http://localhost:8000/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const responseElement = document.createElement('div');
+                    responseElement.textContent = "Assistente: " + data.answer;
+                    chatMessages.appendChild(responseElement);
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar pergunta:', error);
+                    const errorElement = document.createElement('div');
+                    errorElement.textContent = "Assistente: Erro ao processar a pergunta.";
+                    chatMessages.appendChild(errorElement);
+                });
+                chatInput.value = '';
+            }
+        }
+    </script>
+</body>
+</html>
